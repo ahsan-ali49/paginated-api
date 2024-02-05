@@ -1,5 +1,36 @@
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
+const User = require("./users");
+require("dotenv").config();
+
+mongoose.connect(process.env.DATABASE_URL)
+const db = mongoose.connection
+
+db.once("open", async()=>{
+    if(await User.countDocuments().exec()>0)
+        return
+
+    Promise.all([
+        User.create([
+            {id: 1, name: "User 1"},
+            {id: 2, name: "User 2"},
+            {id: 3, name: "User 3"},
+            {id: 4, name: "User 4"},
+            {id: 5, name: "User 5"},
+            {id: 6, name: "User 6"},
+            {id: 7, name: "User 7"},
+            {id: 8, name: "User 8"},
+            {id: 9, name: "User 9"},
+            {id: 10, name: "User 10"},
+            {id: 11, name: "User 11"},
+            {id: 12, name: "User 12"},
+            {id: 13, name: "User 13"},
+        
+        ])
+    ]).then(()=> console.log("Added Users"))
+})
+
 
 const users = [
     {id: 1, name: "User 1"},
@@ -35,7 +66,7 @@ const posts = [
 
 ]
 
-app.get("/users", paginatedResults(users), (req, res)=>{
+app.get("/users", paginatedResults(User), (req, res)=>{
     res.json(res.paginatedResults)
 })
 
@@ -73,4 +104,4 @@ function paginatedResults(model){
     }
 }
 
-app.listen(3000);
+app.listen(process.env.PORT || 5000);
